@@ -1,4 +1,3 @@
--- lazy-nvim for installing modules.
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   vim.fn.system({
@@ -13,49 +12,38 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-     "williamboman/mason.nvim", -- for installing packages
+     "williamboman/mason.nvim",
      {
-    'AlexvZyl/nordic.nvim', -- theme
+    'AlexvZyl/nordic.nvim',
     lazy = false,
     priority = 1000,
     config = function()
         require 'nordic' .load()
     end
      },
-     {
-     "VonHeikemen/lsp-zero.nvim", -- for lsp configuration
-     dependencies={
-       "neovim/nvim-lspconfig",
-       "hrsh7th/nvim-cmp",
-       "hrsh7th/cmp-buffer",
-       "hrsh7th/cmp-nvim-lsp",
-       "williamboman/mason-lspconfig.nvim",
-     },
-   },
    "vim-airline/vim-airline",
+   "nvim-tree/nvim-tree.lua",
+   "nvim-tree/nvim-web-devicons",
+   "neovim/nvim-lspconfig",
+   "hrsh7th/nvim-cmp",
+   "hrsh7th/cmp-buffer",
+   "hrsh7th/cmp-nvim-lsp",
+   "williamboman/mason-lspconfig.nvim",
   })
 
-require("mason").setup()
-
-local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig()
-
-lsp_zero.on_attach(function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp_zero.default_keymaps({buffer = bufnr})
-end)
-
--- to learn how to use mason.nvim
--- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
-require('mason').setup({})
-require('mason-lspconfig').setup({
-  ensure_installed = {},
-  handlers = {
-    function(server_name)
-      require('lspconfig')[server_name].setup({})
-    end,
-  },
+require("mason").setup({})
+vim.lsp.enable('pyright')
+vim.lsp.enable('clangd')
+vim.lsp.enable('rust_analyzer')
+vim.diagnostic.config({
+	virtual_text = true,
+	underline = true,
+	update_in_insert = false,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = true,
+	},
 })
 
 local cmp = require('cmp')
@@ -95,7 +83,7 @@ cmp.setup({
 
 require('lspconfig').pyright.setup({})
 
--- Some old Vim configuration
+-- Tree configuration
 vim.opt.colorcolumn = {"72", "80", "100"}
 vim.opt.autoindent = true
 vim.opt.tabstop=4
@@ -109,3 +97,27 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 vim.opt.undofile=true
 vim.opt.relativenumber=true
+
+-- Nvim tree
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- optionally enable 24-bit colour
+vim.opt.termguicolors = true
+
+-- OR setup with some options
+require("nvim-tree").setup({
+  sort = {
+    sorter = "case_sensitive",
+  },
+  view = {
+    width = 30,
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = true,
+  },
+})
