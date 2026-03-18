@@ -85,6 +85,7 @@ require('lspconfig').pyright.setup({})
 
 -- Tree configuration
 vim.opt.colorcolumn = {"72", "80", "100"}
+vim.opt.textwidth = 100
 vim.opt.autoindent = true
 vim.opt.tabstop=4
 vim.opt.shiftwidth=4
@@ -97,6 +98,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 vim.opt.undofile=true
 vim.opt.relativenumber=true
+-- Use internal formatting for bindings like gq.
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    vim.bo[args.buf].formatexpr = nil
+  end,
+})
 
 -- Nvim tree
 -- disable netrw at the very start of your init.lua
