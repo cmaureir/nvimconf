@@ -32,9 +32,14 @@ require("lazy").setup({
   })
 
 require("mason").setup({})
-vim.lsp.enable('pyright')
-vim.lsp.enable('clangd')
-vim.lsp.enable('rust_analyzer')
+
+-- Share capabilities from nvim-cmp across all LSP servers
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
+
+vim.lsp.enable({ 'pyright', 'clangd', 'rust_analyzer' })
+
 vim.diagnostic.config({
 	virtual_text = true,
 	underline = true,
@@ -80,8 +85,6 @@ cmp.setup({
     end,
   },
 })
-
-require('lspconfig').pyright.setup({})
 
 -- Tree configuration
 vim.opt.colorcolumn = {"72", "80", "100"}
